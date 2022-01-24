@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/subCategoryStyle"
-            android:paddingTop="16dp"
+            android:layout_marginTop="16dp"
             android:textStyle="bold"
             tools:text="One" />
 

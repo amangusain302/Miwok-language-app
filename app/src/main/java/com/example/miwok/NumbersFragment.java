@@ -1,22 +1,28 @@
 package com.example.miwok;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
+
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-public class NumbersActivity extends AppCompatActivity {
+
+/**
+ * A simple {@link Fragment} subclass.
+**/
+public class NumbersFragment extends Fragment {
+
+
 
     private MediaPlayer mMediaPlayer;
 
@@ -27,7 +33,7 @@ public class NumbersActivity extends AppCompatActivity {
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
                     if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                       releaseMediaPlayer();
+                        releaseMediaPlayer();
                     }
                     else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
                             focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
@@ -42,7 +48,7 @@ public class NumbersActivity extends AppCompatActivity {
             };
 
 
-     private MediaPlayer.OnCompletionListener mCompletionListener = new MediaPlayer.OnCompletionListener() {
+    private MediaPlayer.OnCompletionListener mCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
             releaseMediaPlayer();
@@ -50,13 +56,19 @@ public class NumbersActivity extends AppCompatActivity {
     };
 
 
+    public NumbersFragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
 
         //create and set up the (@link AudioManager ) to the request audio file
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
         AudioManager.OnAudioFocusChangeListener afChangeListener = null;
 
 
@@ -74,9 +86,9 @@ public class NumbersActivity extends AppCompatActivity {
         words.add(new word("Ten", "na'aacha", R.drawable.number_ten, R.raw.number_ten));
 
 
-        WordAdapter adapter = new WordAdapter(this, words, R.color.category_numbers);
+        WordAdapter adapter = new WordAdapter(getActivity(), words, R.color.category_numbers);
 
-        ListView listView = (ListView) findViewById(R.id.list);
+        ListView listView = (ListView) rootView.findViewById(R.id.list);
 
         listView.setAdapter(adapter);
 
@@ -98,8 +110,7 @@ public class NumbersActivity extends AppCompatActivity {
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
 
-
-                    mMediaPlayer = MediaPlayer.create(NumbersActivity.this, word.getmAudioResourceId());
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getmAudioResourceId());
                     mMediaPlayer.start();
                     //set up a listener on the  media player, so we can stop the release the media player once the
                     //sound has done
@@ -107,10 +118,11 @@ public class NumbersActivity extends AppCompatActivity {
                 }
             }
         });
+        return rootView;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         //when activity stopped then release the media player resource because we won't
         //be played the sound more
